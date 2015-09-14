@@ -3,4 +3,5 @@ This is a scientific calculator written in HTML5 and JavaScript. I used PhoneGap
 
 ```
 ![GitHub Logo](https://www.dropbox.com/s/o7ga4rejm3ykpf7/screenshot.png?raw=true)
+Format: ![Alt Text](url)
 
