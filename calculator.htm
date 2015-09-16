@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" http-equiv="Content-Type" content="text/html" />
+        <meta name="Author" content="Sphinx01">
+        <title>Scientific Calculator</title>
+        <script language="javascript">
+            calc_array = new Array(); //Tableau dans lequel on va stocker les opérateurs,nombres et resultat
+            var calcul=0; //Resultat calculé
+            var pas_ch=0; //Booléen qui dit si la zone de calcul est vide ou non
+            var signe;
+            var ans_stocke=0;
+            function $id(id)
+            {
+                return document.getElementById(id); //fonction pour créer une réference vers un objet d'indentifiant = id pour changer ses attributs
+            }
+            function f_calc(id,n) //Pour les opérateurs et autres bouttons que les chiffres,virgule et le signe -
+            {
+                /*****Bouton AC *****/
+                if(n=='ac')
+                {
+                initialiser_calc(id); //Remplacer le resultat affiché par 0
+                }
+                /*****Bouton = *****/
+                else if(n=='=')
+                {
+                    if(calc_array[id][0]!='=' && calc_array[id][1]!=1)  //Si on n'a pas encore tapé = et la zone de calcul n'est pas vide
+                    {
+                        eval('calcul='+calc_array[id][2]+calc_array[id][0]+calc_array[id][3]+';');//Executer l'operation calcul=nbr1 operateur nbr2; si operateur est different de =
+                        calc_array[id][0] = '='; // affecter operateur par =
+                        $id(id+'_resultat').value=calcul; //La valeur affichée sera = calcul
+                        calc_array[id][2]=calcul; //Mettre à jour la valeur de nbr1 par calcul pour le réutiliser dans un calcul en chaine comme 2+5-3+...
+                        calc_array[id][3]=0; //réintialiser le nbr2
+                    }
+                }
+                /*****Bouton DEL *****/
+                else if(n=='del') //delete
+                {
+                    if($id(id+'_resultat').value<10 && $id(id+'_resultat').value>-10) //si la valeur est affichée est =-9,-8,...,0,1,...9
+                    {
+                        $id(id+'_resultat').value=0;
+                    }
+                    else //si la valeur affichée contient plusieurs chiffres
+                    {
+                        $id(id+'_resultat').value=$id(id+'_resultat').value.slice(0,$id(id+'_resultat').value.length-1);//selectionner (longueur_valeur_affichee-1) chiffres de la valeur affichée à partir du chiffre du poids fort
+                    }
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                }
+                /*****Bouton ANS *****/
+                else if(n=='ans') //Dernier résultat
+                {
+                    $id(id+'_resultat').value = ans_stocke;
+                }
+                /*****Bouton Factorielle*****/
+                else if(n=='fact')
+                {
+                    $id(id+'_resultat').value =factorielle(parseInt($id(id+'_resultat').value));
+                    calcul=$id(id+'_resultat').value;               
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        //ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;;
+                }
+                /*****Bouton Carré*****/
+                else if(n=='carre')
+                {
+                    $id(id+'_resultat').value =Math.pow($id(id+'_resultat').value,2); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        //ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton X puissance 3 *****/
+                else if(n=='puissTrois')
+                {
+                    $id(id+'_resultat').value =Math.pow($id(id+'_resultat').value,3); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = $id(id+'_resultat').value;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        //ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;;
+                }
+                /*****Bouton X puissance n *****/
+                else if(n=='puiss_n')
+                {
+                    if(calc_array[id][0]!='=' && calc_array[id][1]!=1)
+                    {
+                        calcul=Math.pow(parseInt(calc_array[id][2]),parseInt(calc_array[id][3]));
+                        calcul=$id(id+'_resultat').value;
+                        $id(id+'_resultat').value=calcul;
+                        calc_array[id][2]=calcul;
+                        calc_array[id][3]=0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    calc_array[id][0] = n; 
+                }
+                /*****Bouton Racine carré*****/
+                else if(n=='racine')
+                {
+                    $id(id+'_resultat').value =Math.sqrt($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;;
+                }
+                /*****Bouton Logarithme*****/
+                else if(n=='log')
+                {
+                    $id(id+'_resultat').value =Math.log($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        if($id(id+'_resultat').value <=0) $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Logarithme neperien*****/
+                else if(n=='ln')
+                {
+                    $id(id+'_resultat').value =Math.log($id(id+'_resultat').value)*Math.LN10; 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        if($id(id+'_resultat').value <=0) $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Exponentielle de base e*****/
+                else if(n=='exp')
+                {
+                    $id(id+'_resultat').value =Math.exp($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                }
+                else
+                {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                }
+                pas_ch = 1;;
+                }
+                /*****Bouton Exponentielle de base 10*****/
+                else if(n=='expd')
+                {
+                    $id(id+'_resultat').value =Math.exp($id(id+'_resultat').value*Math.LN10); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;;
+                }
+                /*****Bouton Cosinus*****/
+                else if(n=='cos')
+                {
+                    $id(id+'_resultat').value =Math.cos($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                        ans_stocke = calc_array[id][2];
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                        ans_stocke = calc_array[id][3];
+                    }
+                    pas_ch = 1;;
+                }
+                /*****Bouton Sinus*****/
+                else if(n=='sin')
+                {
+                    $id(id+'_resultat').value =Math.sin($id(id+'_resultat').value);
+                    calcul=$id(id+'_resultat').value;               
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Tangente*****/
+                else if(n=='tan')
+                {
+                    $id(id+'_resultat').value =Math.tan($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        if(calc_array[id][2] == '0') $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Arcosinus*****/
+                else if(n=='acos')
+                {
+                    $id(id+'_resultat').value =Math.acos($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        //if(calc_array[id][2] == '0') $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Arcsinus*****/
+                else if(n=='asin')
+                {
+                    $id(id+'_resultat').value =Math.asin($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        //if(calc_array[id][2] == '0') $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                    pas_ch = 1;
+                }
+                /*****Bouton Arctangente*****/
+                else if(n=='atan')
+                {
+                    $id(id+'_resultat').value =Math.atan($id(id+'_resultat').value); 
+                    calcul=$id(id+'_resultat').value;
+                    if(calc_array[id][0]=='=')
+                    {
+                        calc_array[id][2] = $id(id+'_resultat').value;
+                        //if(calc_array[id][2] == '0') $id(id+'_resultat').value="Math error"; 
+                        calc_array[id][3] = 0;
+                    }
+                    else
+                    {
+                        calc_array[id][3] = $id(id+'_resultat').value;
+                    }
+                    pas_ch = 1;
+                }
+                //Bouttons +,-,*,/
+                else
+                {
+                    if(calc_array[id][0]!='=' && calc_array[id][1]!=1)
+                    {
+                        eval('calcul='+calc_array[id][2]+calc_array[id][0]+calc_array[id][3]+';');
+                        $id(id+'_resultat').value=calcul;
+                        calc_array[id][2]=calcul;
+                        calc_array[id][3]=0;      
+                    }
+                        calc_array[id][0] = n; 
+                        ans_stocke = calcul;
+                }
+                if(pas_ch==0)  
+                {
+                    calc_array[id][1] = 1;
+                }
+                else
+                {
+                    pas_ch=0;
+                }
+                //ans_stocke = calc_array[id][2];
+                document.getElementById(id+'_resultat').focus();
+                return true;
+            }
+            function add_calc(id,n) //Afficher le nombres et resultat
+            {
+                signe=n;
+                if(calc_array[id][1]==1) 
+                {
+                    if(n=='log') $id(id+'_resultat').value='log ';
+                    $id(id+'_resultat').value=n;//si la zone de calcul est vide afficher le chiffre (ou virgule) n
+                }
+                else if(calc_array[id][1]!=1 && $id(id+'_resultat').value!=Math.PI && n!=Math.PI) //pour eviter d'ajouter des chiffres devant ou derriere PI
+                {
+                    $id(id+'_resultat').value+=n; //S'il existe déjà un(des) chiffre(s) (ou virgule), concaténer ce chiffre(ou virgule) à la droite du nombre affiché
+                }
+                if(calc_array[id][0]=='=')
+                {
+                    /*if(n=='log')
+                    {
+                        if(parseFloat($id(id+'_resultat').value.slice(4,$id(id+'_resultat').value.length-1))<=0) 
+                        {
+                                $id(id+'_resultat').value = 'Math erreur';
+                                calc_array[id][2] = 0;
+                                calc_array[id][3] = 0;
+                        }
+                        calc_array[id][2] = Math.log(parseFloat($id(id+'_resultat').value.slice(4,$id(id+'_resultat').value.length-1)));
+                    }*/
+                    calc_array[id][2] = $id(id+'_resultat').value;
+                    calc_array[id][3] = 0;
+                    if(signe=='-') calc_array[id][2] *=-1;
+                
+                }
+                else
+                {
+                calc_array[id][3] = $id(id+'_resultat').value;
+                if(signe=='-') calc_array[id][3] *=-1;
+                //ans_stocke = calc_array[id][3];
+                }
+                calc_array[id][1] = 0;
+                document.getElementById(id+'_resultat').focus();
+                return true;
+            }
+            function initialiser_calc(id)
+            {
+                $id(id+'_resultat').value=0;
+                calc_array[id] = new Array('=',1,'0','0',0); 
+                document.getElementById(id+'_resultat').focus();
+                return true;
+            }
+            function key_detect_calc(id,evt) //Gérer les évenements du clavier:0,1,...,9,*,/,-,+,.,Entrée,delete et suppr
+            {
+                if((evt.keyCode>95) && (evt.keyCode<106))
+                {
+                    var nbr = evt.keyCode-96;
+                    add_calc(id,nbr);
+                }
+                else if((evt.keyCode>47) && (evt.keyCode<58))
+                {
+                    var nbr = evt.keyCode-48;
+                    add_calc(id,nbr);
+                }
+                else if(evt.keyCode==107)
+                {
+                    f_calc(id,'+');
+                }
+                else if(evt.keyCode==109)
+                {
+                    f_calc(id,'-');
+                }
+                else if(evt.keyCode==106)
+                {
+                    f_calc(id,'*');
+                }
+                else if(evt.keyCode==111)
+                {
+                    f_calc(id,'/');
+                }
+                else if(evt.keyCode==110)
+                {
+                    add_calc(id,'.');
+                }
+                else if(evt.keyCode==190)
+                {
+                    add_calc(id,'.');
+                }
+                else if(evt.keyCode==188)
+                {
+                    add_calc(id,'.');
+                }
+                else if(evt.keyCode==13)
+                {
+                    f_calc(id,'=');
+                }
+                else if(evt.keyCode==46)
+                {
+                    f_calc(id,'ac');
+                }
+                else if(evt.keyCode==8)
+                {
+                    f_calc(id,'del');
+                }
+                else if(evt.keyCode==27)
+                {
+                    f_calc(id,'ac');
+                }
+                return true;
+            }
+            function factorielle(n)
+            {
+                if(n==0) return 1;
+                if(n==1) return 1;
+                return n*factorielle(n-1);
+            }
+        </script>
+        <style type="text/css"  media="screen, print, handheld" >
+            .calculatrice
+            {
+                width:400px;
+                height:500px;
+                background-color:#383838  ;
+                border:2px solid #CCCCCC;
+                margin:auto;
+                padding-left:5px;
+                padding-bottom:5px;
+            }
+            .calculatrice td
+            {
+                height:40px;
+                width:100px;
+            }
+            #vide
+            {
+                height:20px;
+            }
+            .calc_td_resultat
+            {
+                text-align:center;
+            }
+            .calc_resultat
+            {
+                width:98%;
+                height:40px;
+                text-align:right;
+                font-weight:bold;   
+            }
+            .calc_td_calculs
+            {
+                text-align:center;
+            }
+            .calc_calculs
+            {
+                width:90%;
+                text-align:left;
+            }
+            .calc_td_btn
+            {
+                width:25%;
+                height:100%;
+            }
+            .calc_btn
+            {
+                width:90%;
+                height:90%;
+                font-size:20px;
+                font-weight: bold;  
+                background-color:#989898; 
+            }
+            #cap
+            {
+                font-size:30px;
+                font-weight: bold;      
+            }
+            #del_bn,#ac_bn
+            {
+                background-color:#D0D0D0;
+            }
+        </style>
+    </head>
+    <body>
+        <table class="calculatrice" id="calc">
+		    <caption id ="cap"><big>S</big>cientific <big>C</big>alculator</caption> <br/>
+            <tr>
+                <td colspan="5" class="calc_td_resultat">
+					<input type="text" readonly="readonly" name="calc_resultat" id="calc_resultat" class="calc_resultat" onkeydown="javascript:key_detect_calc('calc',event);" />
+			   </td>
+            </tr>
+            <tr>
+                <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','fact');">X!</button>
+			   </td>
+                <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','carre');">X&sup2;</button>
+				</td>
+                <td class="calc_td_btn">  
+					<button class="calc_btn" onclick="javascript:f_calc('calc','puissTrois');">X&sup3;</button>
+				</td>
+				<td class="calc_td_btn">
+				    <button class="calc_btn" onclick="javascript:f_calc('calc','puiss_n');">X<sup>n</sup></button>            
+				</td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','racine');" >&radic;X</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','nrac);"><sup>n</sup>&radic;X</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','log');">log</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','ln');">ln</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','exp');">e<sup>x</sup></button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','expd');">10<sup>x</sup></button>
+                </td>
+			</tr>
+			<tr>
+			    <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','cos');">cos</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','sin');">sin</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','tan');">tan</button>
+                </td>
+			    <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:add_calc('calc','-');">&plusmn;</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:add_calc('calc',Math.PI);">&Pi;</button>
+                </td>
+			</tr>
+			<tr>
+			    <td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','acos');">acos</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','asin');">asin</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" onclick="javascript:f_calc('calc','atan');">atan</button>
+                </td>
+			</tr>
+			<tr>
+					<td colspan="5" id ="vide">
+					</td>
+			</tr>
+			<tr>
+				<td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',7);" >7</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',8);" >8</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',9);" >9</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" id="del_bn" onclick="javascript:f_calc('calc','del');" >DEL</button>
+                </td>
+				<td class="calc_td_btn">
+					<button class="calc_btn" id="ac_bn" onclick="javascript:f_calc('calc','ac');" >AC</button>
+				</td>
+            </tr>
+            <tr>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',4);" >4</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',5);" >5</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',6);" >6</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','*');" >&times;</button>
+                </td>
+				<td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','/');" >&divide;</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',1);" >1</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',2);" >2</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',3);" >3</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','+');" >+</button>
+                </td>
+				<td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','-');" >-</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc',0);" >0</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:add_calc('calc','.');" >,</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','exp');" >EXP</button>
+                </td>
+                <td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','ans');" >ANS</button>
+                </td>
+				<td class="calc_td_btn">
+                    <button class="calc_btn" onclick="javascript:f_calc('calc','=');" >=</button>
+                </td>
+            </tr>
+        </table>
+        <script type="text/javascript">
+                document.getElementById('calc').onload=initialiser_calc('calc');
+        </script>
+    </body>
+</html>
